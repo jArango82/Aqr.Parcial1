@@ -8,7 +8,6 @@ class CentralRiesgoPostgresImpl implements CentralRiesgoRepository {
 
   @override
   Future<int> obtenerPuntaje(String tipoDoc, String nroDoc) async {
-    // Esto asume una tabla 'central_riesgo' con columnas 'tipo_doc', 'nro_doc' y 'puntaje'.
     final result = await connection.execute(
       Sql.named(
         'SELECT puntaje FROM DATOS WHERE TipoDoc = @TipoDoc AND NroDOC = @NroDOC',
@@ -17,7 +16,6 @@ class CentralRiesgoPostgresImpl implements CentralRiesgoRepository {
     );
 
     if (result.isEmpty) {
-      // Si no existe, podemos decidir retornar 0, o manejarlo como error
       return 0;
     }
 

@@ -1,5 +1,4 @@
 import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:postgres/postgres.dart';
 
@@ -11,18 +10,16 @@ import 'capa_presentacion/credito_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   CentralRiesgoRepository repository;
-  
+
   String host = '127.0.0.1';
   try {
     if (Platform.isAndroid) {
       host = '10.0.2.2';
     }
-  } catch(e) {
-    // Es intencional, en web Platform.isAndroid arroja error
-  }
-  
+  } catch (e) {}
+
   try {
     final connection = await Connection.open(
       Endpoint(
@@ -32,20 +29,16 @@ void main() async {
         username: 'postgres',
         password: '070320',
       ),
-      settings: const ConnectionSettings(
-        sslMode: SslMode.disable, // Necesario para pruebas locales
-      ),
+      settings: const ConnectionSettings(sslMode: SslMode.disable),
     );
-    
-    debugPrint('✅ Conexión a PostgreSQL establecida en \$host');
+
+    debugPrint('Conexión a PostgreSQL establecida en \$host');
     repository = CentralRiesgoPostgresImpl(connection: connection);
-    
   } catch (e) {
-    debugPrint('❌ Error conectando a PostgreSQL: \$e');
-    debugPrint('⚠️ Haciendo Fallback a Repositorio en Memoria');
+    debugPrint('Error conectando a PostgreSQL: \$e');
     repository = CentralRiesgoMemoryImpl();
   }
-  
+
   final useCase = EvaluarCreditoUseCase(repository);
 
   runApp(MyApp(useCase: useCase));
@@ -63,11 +56,11 @@ class MyApp extends StatelessWidget {
       title: 'Consultar Crédito',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF0F4C81), // Azul clásico e institucional
-          secondary: const Color(0xFFF9A826), // Acento moderno
+          seedColor: const Color(0xFF0F4C81), // Azul institucional
+          secondary: const Color(0xFFF9A826),
         ),
         useMaterial3: true,
-        fontFamily: 'Roboto', // Fuente estándar limpia
+        fontFamily: 'Roboto',
       ),
       home: CreditoScreen(evaluarCreditoUseCase: useCase),
     );
